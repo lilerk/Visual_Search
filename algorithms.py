@@ -136,6 +136,7 @@ def astar(draw, grid, start, end):
 
 			path.reverse()
 			print("Path: ", path)
+			print("Length: ", len(path))
 			
 			reconstruct_path(came_from, end, draw)
 			end.make_end()
@@ -185,7 +186,7 @@ def bfs(draw, start, end):
 
 			path.reverse()
 			print("Path: ", path)
-
+			print("Length: ", len(path))
 			
 			reconstruct_path(came_from, end, draw)
 			end.make_end()
@@ -228,6 +229,7 @@ def dfs(draw,start,end):
 
 			path.reverse()
 			print("Path: ", path)
+			print("Length: ", len(path))
 			
 			reconstruct_path(came_from, end, draw)
 			end.make_end()
@@ -267,7 +269,8 @@ def dijkstra(draw,grid,start,end):
 				current = came_from[current]
 
 			path.reverse()
-			print("Path: ", path)
+			print("Path: \n", path)
+			print("Length: ", len(path))
 
 			if end in came_from:
 				reconstruct_path(came_from, end, draw)
@@ -317,6 +320,7 @@ def ucs(draw,grid,start,end):
 
 			path.reverse()
 			print("Path: ", path)
+			print("Length: ", len(path))
 			
 			reconstruct_path(came_from, end, draw)
 			end.make_end()
