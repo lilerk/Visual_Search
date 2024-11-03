@@ -89,6 +89,9 @@ class Spot:
 	def __lt__(self, other):
 		return False
 
+	def __repr__(self):
+		return f"({self.row}, {self.col})"
+
 
 def h(p1, p2):
 	x1, y1 = p1
@@ -106,6 +109,8 @@ def reconstruct_path(came_from, current, draw):
 def astar(draw, grid, start, end):
 	count = 0
 	open_set = PriorityQueue()
+	path = {}
+	path[start] = None
 	open_set.put((0, count, start))
 	came_from = {}
 	g_score = {spot: float("inf") for row in grid for spot in row}
@@ -124,6 +129,14 @@ def astar(draw, grid, start, end):
 		open_set_hash.remove(current)
 
 		if current == end:
+			path = []
+			while current:
+				path.append(current)
+				current = came_from[current]
+
+			path.reverse()
+			print("Path: ", path)
+			
 			reconstruct_path(came_from, end, draw)
 			end.make_end()
 			return True
@@ -133,6 +146,7 @@ def astar(draw, grid, start, end):
 
 			if temp_g_score < g_score[neighbor]:
 				came_from[neighbor] = current
+				path[neighbor] = current
 				g_score[neighbor] = temp_g_score
 				f_score[neighbor] = temp_g_score + h(neighbor.get_pos(), end.get_pos())
 				if neighbor not in open_set_hash:
@@ -153,6 +167,9 @@ def bfs(draw, start, end):
 	came_from = {start: None}
 	q.put(start)
 
+	came_from = {}
+	came_from[start] = None
+
 	while not q.empty():
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -161,8 +178,16 @@ def bfs(draw, start, end):
 		current = q.get()
 
 		if current == end:
-			if end in came_from:
-				reconstruct_path(came_from, end, draw)
+			path = []
+			while current:
+				path.append(current)
+				current = came_from[current]
+
+			path.reverse()
+			print("Path: ", path)
+
+			
+			reconstruct_path(came_from, end, draw)
 			end.make_end()
 			return True
 		
@@ -185,6 +210,9 @@ def dfs(draw,start,end):
 	came_from = {}
 	stack.put(start)
 
+	came_from = {}
+	came_from[start] = None
+
 	while not stack.empty():
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -193,16 +221,23 @@ def dfs(draw,start,end):
 		current = stack.get()
 
 		if current == end:
-			if end in came_from:
-				reconstruct_path(came_from, end, draw)
+			path = []
+			while current:
+				path.append(current)
+				current = came_from[current]
+
+			path.reverse()
+			print("Path: ", path)
+			
+			reconstruct_path(came_from, end, draw)
 			end.make_end()
 			return True
 		
-		for cell in current.neighbors:
-			if cell not in came_from:
-				stack.put(cell)
-				came_from[cell] = current
-				cell.make_open()
+		for neighbor in current.neighbors:
+			if neighbor not in came_from:
+				stack.put(neighbor)
+				came_from[neighbor] = current
+				neighbor.make_open()
 
 		draw()
 
@@ -216,6 +251,9 @@ def dijkstra(draw,grid,start,end):
 	distance = {spot: float("inf") for row in grid for spot in row}
 	distance[start] = 0 
 
+	came_from = {}
+	came_from[start] = None
+
 	priority_queue = PriorityQueue()
 	priority_queue.put((0, start))  
 
@@ -223,6 +261,18 @@ def dijkstra(draw,grid,start,end):
 		current_distance, current = priority_queue.get()
 
 		if current == end:
+			path = []
+			while current:
+				path.append(current)
+				current = came_from[current]
+
+			path.reverse()
+			print("Path: ", path)
+
+			if end in came_from:
+				reconstruct_path(came_from, end, draw)
+			end.make_end()
+
 			return True
 
 		for neighbor in current.neighbors:
@@ -233,6 +283,7 @@ def dijkstra(draw,grid,start,end):
 
 			if temp_distance < distance[neighbor]:
 				distance[neighbor] = temp_distance
+				came_from[neighbor] = current
 				priority_queue.put((temp_distance, neighbor))
 				neighbor.make_open()
 
@@ -249,6 +300,9 @@ def ucs(draw,grid,start,end):
 	cost = {spot: float("inf") for row in grid for spot in row}
 	cost[start] = 0
 
+	came_from = {}
+	came_from[start] = None
+
 	priority_queue = PriorityQueue()
 	priority_queue.put((0, start))
 
@@ -256,6 +310,16 @@ def ucs(draw,grid,start,end):
 		current_cost, current = priority_queue.get()
 
 		if current == end:
+			path = []
+			while current:
+				path.append(current)
+				current = came_from[current]
+
+			path.reverse()
+			print("Path: ", path)
+			
+			reconstruct_path(came_from, end, draw)
+			end.make_end()
 			return True
 
 		for neighbor in current.neighbors:
@@ -266,6 +330,7 @@ def ucs(draw,grid,start,end):
 
 			if temp_cost < cost[neighbor]:
 				cost[neighbor] = temp_cost
+				came_from[neighbor] = current
 				priority_queue.put((temp_cost, neighbor))
 				neighbor.make_open()
 		
